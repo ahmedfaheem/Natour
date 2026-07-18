@@ -4,10 +4,9 @@ const PATH = `${__dirname}/../dev-data/data/tours-simple.json`;
 const tours = JSON.parse(fs.readFileSync(PATH));
 
 // Params Middleware
-exports.checkID = (req, res, next) => {
-  const id = req.params.id * 1;
-
-  if (Number.isNaN(id) || id > tours.length - 1) {
+exports.checkID = (req, res, next, val) => {
+  console.log(`Loggen ID ${val}`);
+  if (Number.isNaN(val) || val > tours.length - 1) {
     return res.status(404).json({
       status: 'fail',
       message: 'ID Not Valid',
