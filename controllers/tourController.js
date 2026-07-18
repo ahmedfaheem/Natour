@@ -3,6 +3,20 @@ const fs = require('fs');
 const PATH = `${__dirname}/../dev-data/data/tours-simple.json`;
 const tours = JSON.parse(fs.readFileSync(PATH));
 
+// Params Middleware
+exports.checkID = (req, res, next) => {
+  const id = req.params.id * 1;
+
+  if (Number.isNaN(id) || id > tours.length - 1) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'ID Not Valid',
+    });
+  }
+
+  next();
+};
+
 exports.getAllTours = (req, res) => {
   if (!tours) {
     res.status(204).json({
@@ -52,12 +66,6 @@ exports.getTourByID = (req, res) => {
   const id = req.params.id * 1;
 
   const tour = tours.find((e) => e.id == id);
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Tour Not Found',
-    });
-  }
 
   res.status(200).json({
     status: 'success',
@@ -67,6 +75,7 @@ exports.getTourByID = (req, res) => {
 
 exports.updateTour = (req, res) => {
   const id = req.params.id * 1;
+
   const tour = tours.find((e) => e.id == id);
   if (!tour || !req.body) {
     return res.status(404).json({
@@ -85,14 +94,9 @@ exports.updateTour = (req, res) => {
 
 exports.deleteTour = (req, res) => {
   const id = req.params.id * 1;
+
   const tour = tours.find((e) => e.id == id);
 
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Tour Not Found',
-    });
-  }
   // 204 no-content
   return res.status(200).json({
     status: 'success',
