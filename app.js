@@ -25,7 +25,9 @@ app.use(express.json()); // any req body must be json so we can get req.body
 //   next(); // next middleware
 // });
 
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
 
 // static middleware to access files
 app.use(express.static(Path.join(__dirname, 'public')));
