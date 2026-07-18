@@ -1,9 +1,11 @@
 const express = require('express');
+
 const app = express();
 const morgan = require('morgan');
+const Path = require('path');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
-const Path = require('path');
+
 /*
 200 ok and return data   get
 201 created     create
