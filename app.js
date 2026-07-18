@@ -1,8 +1,9 @@
-const expres = require('express');
-const app = expres();
+const express = require('express');
+const app = express();
 const morgan = require('morgan');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const Path = require('path');
 /*
 200 ok and return data   get
 201 created     create
@@ -17,19 +18,22 @@ const userRouter = require('./routes/userRoutes');
 */
 
 //1- Middleware
-app.use(expres.json()); // any req body must be json so we can get req.body
+app.use(express.json()); // any req body must be json so we can get req.body
 // app.use((req, res, next) => {
 //   console.log('First Middleware - applied to all routes');
 
 //   next(); // next middleware
 // });
 
+app.use(morgan('dev'));
+
+// static middleware to access files
+app.use(express.static(Path.join(__dirname, 'public')));
+
 app.use((req, res, next) => {
   req.TimeRequest = new Date().toISOString();
   next(); // next middleware
 });
-
-app.use(morgan('dev'));
 
 // 3- Routes
 app.use('/api/v1/tours', tourRouter);
