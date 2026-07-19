@@ -8,6 +8,7 @@ exports.getAllTours = async (req, res) => {
     let queryStr = JSON.stringify(queryObj);
 
     /*
+    127.0.0.1:3000/api/v1/tours?duration[gte]=5&difficulty=difficult&page=5
     to make this input  in this format use setting option  'query parser' to qs package 
     -----
     from { duration: { 'gte': '5' }, difficulty: 'difficult' }
