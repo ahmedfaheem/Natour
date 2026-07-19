@@ -1,21 +1,23 @@
-const fs = require('fs');
-
-// check body middleware
-
-exports.checkBody = (req, res, next) => {
-  const { body } = req;
-  if ((!body && !body.name) || !body.price) {
-    return res.status(400).json({
-      status: 'fail',
-      message: 'Missing Name or Price',
-    });
-  }
-  next();
-};
+const Tour = require('../models/tourModel');
 
 exports.getAllTours = (req, res) => {};
 
-exports.createTour = (req, res) => {};
+exports.createTour = async (req, res) => {
+  try {
+    // const newTour = new Tour({});
+    // newTour.save();
+    const newTour = await Tour.create(req.body);
+    res.status(201).json({
+      status: 'Success',
+      data: newTour,
+    });
+  } catch (e) {
+    res.status(201).json({
+      status: 'fail',
+      error: 'Invalid Data.',
+    });
+  }
+};
 
 exports.getTourByID = (req, res) => {};
 
