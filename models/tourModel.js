@@ -18,10 +18,6 @@ const tourSchema = new mongoose.Schema({
   difficulty: {
     type: String,
     required: [true, 'Difficulty is Required'],
-    enum: {
-      values: ['easy', 'medium', 'hard'],
-      message: 'Please choose a valid difficulty level',
-    },
   },
   ratingsAverage: {
     type: Number,
