@@ -2,11 +2,12 @@ const Tour = require('../models/tourModel');
 
 exports.getAllTours = async (req, res) => {
   try {
+    // 1A: Filter
     const queryObj = structuredClone(req.query);
     const excludedQuery = ['page', 'limit', 'sort', 'fields'];
     excludedQuery.forEach((el) => delete queryObj[el]);
-    let queryStr = JSON.stringify(queryObj);
 
+    //1B: Advanced Filter
     /*
     127.0.0.1:3000/api/v1/tours?duration[gte]=5&difficulty=difficult&page=5
     to make this input  in this format use setting option  'query parser' to qs package 
@@ -15,6 +16,7 @@ exports.getAllTours = async (req, res) => {
     to { duration: { '$gte': '5' }, difficulty: 'difficult' }
     */
     // \b -- Word Boundary- only word without anything spaces or letter
+    let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
     //console.log(JSON.parse(queryStr));
@@ -33,6 +35,25 @@ exports.getAllTours = async (req, res) => {
     //Method 3
     // as know it return query which can chanin sort and another query
     const query = Tour.find(JSON.parse(queryStr));
+
+    //Sort
+    /*
+    GET /api/v1/tours?sort=price  --> ASC
+    GET /api/v1/tours?sort=-price  --> DEC
+    GET /api/v1/tours?sort=price,duration  --> ASC -- if have same price, sort by duration
+    
+    */
+    if (req.query.sort) {
+      // query.sort('price duration)   defualt is Ascending  adding - make it DEC
+      //  query.sort({price: 1,duration: -1})
+
+      let sortQ = req.query.sort;
+      sortQ = sortQ.split(',').join(' ');
+      console.log(sortQ);
+      query.sort(sortQ);
+    } else {
+      query.sort('-createdAt');
+    }
 
     const tours = await query;
     res.status(200).json({
