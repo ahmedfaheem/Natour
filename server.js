@@ -8,10 +8,11 @@ const app = require('./app');
 //console.log(process.env.PORT);
 
 const PORT = process.env.PORT || 3000;
-const { DB_USER, DB_PASS } = process.env;
 
+const DB = process.env.DB_GLOBAL.replace('<PASSWORD>', process.env.DB_PASS);
 mongoose
-  .connect(`mongodb+srv://${DB_USER}:${DB_PASS}@learn.pnb0djv.mongodb.net/`)
+  .connect(DB)
+  // .connect(process.env.DB_LOCAL)
   .then(() => {
     console.log('Connected to DB');
   })
