@@ -34,9 +34,9 @@ exports.getAllTours = async (req, res) => {
 
     //Method 3
     // as know it return query which can chanin sort and another query
-    const query = Tour.find(JSON.parse(queryStr));
+    let query = Tour.find(JSON.parse(queryStr));
 
-    //Sort
+    //2A - Sort
     /*
     GET /api/v1/tours?sort=price  --> ASC
     GET /api/v1/tours?sort=-price  --> DEC
@@ -50,11 +50,27 @@ exports.getAllTours = async (req, res) => {
       let sortQ = req.query.sort;
       sortQ = sortQ.split(',').join(' ');
       console.log(sortQ);
-      query.sort(sortQ);
+      query = query.sort(sortQ);
     } else {
-      query.sort('-createdAt');
+      query = query.sort('-createdAt');
     }
 
+    // 3A- Limiting Fields (projection)
+    /*
+    .selcet('a b c')   only this
+    .selcet('-a -b -c')  all execpt this 
+
+     GET /api/v1/tours?fields=name,duration,price
+     GET /api/v1/tours?fields=-name,-duration,-price
+     */
+
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join(' ');
+      // console.log(fields);
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v');
+    }
     const tours = await query;
     res.status(200).json({
       status: 'success',
