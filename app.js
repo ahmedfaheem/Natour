@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const Path = require('path');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const qs = require('qs');
 
 /*
 200 ok and return data   get
@@ -26,6 +27,8 @@ app.use(express.json()); // any req body must be json so we can get req.body
 
 //   next(); // next middleware
 // });
+// parse req.query
+app.set('query parser', (str) => qs.parse(str));
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));

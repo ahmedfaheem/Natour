@@ -2,7 +2,38 @@ const Tour = require('../models/tourModel');
 
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    const queryObj = structuredClone(req.query);
+    const excludedQuery = ['page', 'limit', 'sort', 'fields'];
+    excludedQuery.forEach((el) => delete queryObj[el]);
+    let queryStr = JSON.stringify(queryObj);
+
+    /*
+    to make this input  in this format use setting option  'query parser' to qs package 
+    -----
+    from { duration: { 'gte': '5' }, difficulty: 'difficult' }
+    to { duration: { '$gte': '5' }, difficulty: 'difficult' }
+    */
+    // \b -- Word Boundary- only word without anything spaces or letter
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+    //console.log(JSON.parse(queryStr));
+
+    //Method 1
+    // const tours = await Tour.find({ duration: { '$gte': '5' }, difficulty: 'difficult' });
+
+    // Method 2
+    //Tour.find();  return query
+    // const tours = await Tour.find()
+    //   .where('difficulty')
+    //   .equals('easy')
+    //   .where('duration')
+    //   .lt(5);
+
+    //Method 3
+    // as know it return query which can chanin sort and another query
+    const query = Tour.find(JSON.parse(queryStr));
+
+    const tours = await query;
     res.status(200).json({
       status: 'success',
       data: tours,
