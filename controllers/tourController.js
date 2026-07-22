@@ -77,10 +77,12 @@ exports.getAllTours = async (req, res) => {
     const limit = Number(req.query.limit) || 5;
     const skip = (page - 1) * limit;
     const totalDocuments = await Tour.countDocuments();
-    console.log(totalDocuments);
     const totalPages = Math.ceil(totalDocuments / limit);
     query = query.skip(skip).limit(limit);
 
+    if (req.query.page) {
+      if (skip >= totalDocuments) throw new Error('Page Not Found');
+    }
     const tours = await query;
 
     res.status(200).json({
