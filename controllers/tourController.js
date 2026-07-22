@@ -1,5 +1,6 @@
 const Tour = require('../models/tourModel');
 const APIFeature = require('../utils/APIFeatures');
+
 exports.aliasTopCheap = async (req, res, next) => {
   req.query.sort = '-ratingsAverage,price';
   req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
