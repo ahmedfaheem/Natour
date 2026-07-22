@@ -1,8 +1,13 @@
 const dotenv = require('dotenv');
+const dns = require('node:dns');
 
 const fs = require('fs');
 
 dotenv.config({ path: './config.env' });
+
+if (process.env.DNS_SERVERS) {
+  dns.setServers(process.env.DNS_SERVERS.split(',').map((server) => server.trim()));
+}
 const mongoose = require('mongoose');
 const Tour = require('../../models/tourModel');
 
