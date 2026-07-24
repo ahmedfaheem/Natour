@@ -1,19 +1,19 @@
 # Natour — Node.js Tours App
 
-Simple RESTful Node.js app from Jonas Schmedtmann's Natours course (section 6).
+Simple RESTful Node.js app based on Jonas Schmedtmann's Natours course (section 6).
 
 ## Features
 
-- Tours and users API
-- Pug templates for views
-- Sample JSON seed data in `dev-data`
+- Tours and Users REST API
+- Pug templates for server-rendered views
+- Sample JSON seed data in `dev-data/data`
 
 ## Requirements
 
-- Node.js 14+ (or newer)
-- npm
+- Node.js 14+ (recommended 16+)
+- npm (or yarn)
 
-## Setup
+## Installation
 
 1. Install dependencies
 
@@ -21,38 +21,58 @@ Simple RESTful Node.js app from Jonas Schmedtmann's Natours course (section 6).
 
 2. Create environment file
 
-   - Copy `config.env` or create an `.env` with required environment variables (PORT, DATABASE, etc.).
+   - Copy `config.env` (if provided) or create a `.env`/`config.env` file in the project root with the following variables as needed:
 
-3. Seed / dev data
+     - `PORT` — port to run the server (default: 3000)
+     - `DATABASE` — MongoDB connection string
+     - `DATABASE_PASSWORD` — (if using a placeholder in `DATABASE` string)
+     - `NODE_ENV` — `development` or `production`
 
-   - Sample JSON data is available in `dev-data/data/` for quick testing.
+3. (Optional) Seed dev data
+
+   - Sample JSON files are in `dev-data/data/` for manual import or quick testing.
+
+## Scripts
+
+- `npm run dev` — start the app with `nodemon` (development)
+
+Use `node server.js` to start the app without `nodemon`.
 
 ## Run
 
-- Start production server:
+- Development (recommended):
 
-  node server.js
+```
+npm run dev
+```
 
-- Run in development (if you have `nodemon`):
+- Production:
 
-  nodemon server.js
+```
+node server.js
+```
+
+## API overview
+
+- Routes are defined in `routes/tourRoutes.js` and `routes/userRoutes.js`.
+- Main resources: `/api/v1/tours` and `/api/v1/users` (see route files for full list).
 
 ## Project structure
 
-- `app.js` — Express app setup
-- `server.js` — App bootstrap
-- `routes/` — Route definitions (`tourRoutes.js`, `userRoutes.js`)
-- `controllers/` — Request handlers
-- `models/` — Data models
+- `app.js` — Express app and middleware setup
+- `server.js` — Server bootstrap and database connection
+- `routes/` — Route definitions
+- `controllers/` — Request handlers (controllers)
+- `models/` — Mongoose models
 - `dev-data/` — Sample JSON data for seeding/testing
-- `public/` — Static assets and frontend templates
-- `img/templates/` — Pug templates used for emails and views
+- `public/` — Static assets and client HTML/CSS
+- `img/templates/` — Pug templates used for views and emails
 
-## Notes
+## Development notes
 
-- Adjust `config.env` values before running in production.
-- The API endpoints are defined in `routes/tourRoutes.js` and `routes/userRoutes.js`.
+- Edit `config.env` values before running in production.
+- Install `nodemon` globally or use the `dev` npm script for auto-reload.
 
 ## License
 
-This repository contains course/demo code; check original course license for reuse.
+This repository contains course/demo code; review the original course license before reuse.

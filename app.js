@@ -45,5 +45,13 @@ app.use((req, res, next) => {
 // 3- Routes
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+
+// not found routes
+app.use((req, res, next) => {
+  res.status(404).json({
+    status: 'fail',
+    message: `The Route ${req.originalUrl}, you tried to fetch not found`,
+  });
+});
 // 4- Server Configuration
 module.exports = app;
