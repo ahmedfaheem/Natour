@@ -3,9 +3,11 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const Path = require('path');
+const qs = require('qs');
+const ErrorGlobalHandeler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
-const qs = require('qs');
+const AppError = require('./utils/AppError');
 
 /*
 200 ok and return data   get
@@ -48,22 +50,20 @@ app.use('/api/v1/users', userRouter);
 
 // not found routes
 app.use((req, res, next) => {
-  const err = new Error(
-    `The Route ${req.originalUrl}, you tried to fetch not found`,
+  // const err = new Error(
+  //   `The Route ${req.originalUrl}, you tried to fetch not found`,
+  // );
+  // err.statusCode = 404;
+  // err.status = 'fail';
+  // instead of do all of this on each time, create Class for Error
+  next(
+    new AppError(
+      `The Route ${req.originalUrl}, you tried to fetch not found`,
+      404,
+    ),
   );
-  err.statusCode = 404;
-  err.status = 'fail';
-  next(err);
 });
 
-app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'fail';
-
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-  });
-});
+app.use(ErrorGlobalHandeler);
 // 4- Server Configuration
 module.exports = app;
