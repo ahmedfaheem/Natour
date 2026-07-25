@@ -22,11 +22,20 @@ mongoose
   .connect(DB)
   .then(() => {
     console.log('Connected to DB');
-  })
-  .catch((e) => {
-    console.log('Failed To Connect', e);
   });
+// .catch((e) => { // instead on that we will handle unhandledRejection to handle promise rejection errors which is outside express like this
+//   console.log('Failed To Connect', e);
+// });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log('Server Running......');
+});
+
+// handle errors outside express
+process.on('unhandledRejection', (e) => {
+  console.log(e.name, e.message);
+  server.close(() => {
+    // gracefully shutdown but give time to handle all currently requests
+    process.exit(1);
+  });
 });
