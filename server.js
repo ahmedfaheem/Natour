@@ -10,6 +10,14 @@ if (process.env.DNS_SERVERS) {
 }
 const mongoose = require('mongoose');
 
+// uncaught exception , run when there is any bug in syncrouns code
+process.on('uncaughtException', (e) => {
+  console.log('Uncaught Exception..');
+  console.log(e.name, e.message);
+
+  process.exit(1);
+});
+
 const app = require('./app');
 
 //console.log(process.env.PORT);
@@ -34,6 +42,8 @@ const server = app.listen(PORT, () => {
 // handle errors outside express
 process.on('unhandledRejection', (e) => {
   console.log(e.name, e.message);
+  console.log('Unhandled Rejection, Server Shutdown');
+
   server.close(() => {
     // gracefully shutdown but give time to handle all currently requests
     process.exit(1);
