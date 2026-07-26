@@ -14,6 +14,7 @@ const mongoose = require('mongoose');
 process.on('uncaughtException', (e) => {
   console.log('Uncaught Exception..');
   console.log(e.name, e.message);
+  console.log(e.stack);
 
   process.exit(1);
 });
