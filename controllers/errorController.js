@@ -40,6 +40,13 @@ const handelValidationError = (err) => {
 
   return new AppError(message, 400);
 };
+
+const handleJWTTokenError = () =>
+  new AppError('Invalid Token, Login Again and use Invalid One', 401);
+
+const handleJWTTokenExpieredError = () =>
+  new AppError('Token Expire, Login Again.', 401);
+
 module.exports = (error, req, res, next) => {
   //   console.log(err.stack);
   // create a shallow copy of the original error object
@@ -52,6 +59,10 @@ module.exports = (error, req, res, next) => {
     if (error.name === 'CastError') error = handelCastError(error);
     if (error.code === 11000) error = handelDuplicateError(error);
     if (error.name === 'ValidationError') error = handelValidationError(error);
+    if (error.name === 'JsonWebTokenError') error = handleJWTTokenError(error);
+    if (error.name === 'TokenExpiredError')
+      error = handleJWTTokenExpieredError(error);
+
     sendErrorProd(error, res);
   }
 };
