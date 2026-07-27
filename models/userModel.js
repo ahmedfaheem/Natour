@@ -53,6 +53,11 @@ userSchema.pre('save', async function () {
     this.password = await bcrypt.hash(this.password, 12);
     // delete passwordConfirm becuase it used only for validation
     this.passwordConfirm = undefined;
+    //update passwordChangeAt
+    // after reset password we generate jwt token
+    // saving in database is slower than  generate jwt so subtract 1 second to gruntee that no problem
+    // when check if password changed after creating token
+    this.passwordChangeAt = Date.now() - 1000;
   }
 });
 
@@ -83,6 +88,14 @@ userSchema.methods.setPasswordResetToken = function () {
 
   return token;
 };
+
+// userSchema.methods.isPasswordResetTokenValid = function (token) {
+//   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+//   return (
+//     hashedToken === this.passwordResetToken &&
+//     Date.now() < this.passwordResetExpire
+//   );
+// };
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

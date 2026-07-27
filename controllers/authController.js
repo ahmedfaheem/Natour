@@ -4,6 +4,7 @@ const JWT = require('jsonwebtoken');
 const AppError = require('../utils/AppError');
 const { promisify } = require('util');
 const { sendMail } = require('../utils/email');
+const crypto = require('crypto');
 
 const getToken = async function (id) {
   return JWT.sign({ id }, process.env.JWT_SECRET, {
@@ -146,7 +147,6 @@ If you didn't forget your password, please ignore this email!`;
   };
 
   try {
-    console.log('sending mail...', message);
     await sendMail(emailOptions);
 
     res.status(200).json({
@@ -161,4 +161,45 @@ If you didn't forget your password, please ignore this email!`;
   }
 });
 
-exports.resetPassword = catchAsync(async (req, res, next) => {});
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  const { password, passwordConfirm } = req.body || {};
+  //1 check if password and passwordConfirm exists
+  if (!password || !passwordConfirm) {
+    return next(
+      new AppError('Must provide password and passwordConfirm fields', 400),
+    );
+  }
+
+  //2 hash provided Token First
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  //3 get user with this token
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpire: { $gte: Date.now() },
+  });
+
+  //4 if token is valid, set passwordResetToken and passwordResetExpire undefined and update password
+  if (!user) {
+    return next(new AppError('Invalid or Expired Token', 400));
+  }
+  user.password = password;
+  user.passwordConfirm = passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpire = undefined;
+  await user.save(); // use save to run all validators
+
+  //5 update passwordChangeAt
+
+  //6 login with jwt
+  const token = await getToken(user._id.toString());
+
+  res.status(200).json({
+    status: 'success',
+    token,
+    message: 'Password Changned Successfully',
+  });
+});
