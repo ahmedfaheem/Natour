@@ -203,3 +203,44 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     message: 'Password Changned Successfully',
   });
 });
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  const { oldPassword, newPassword, passwordConfirm } = req.body || {};
+  //1 check if password and passwordConfirm exists
+  if (!newPassword || !passwordConfirm || !oldPassword) {
+    return next(
+      new AppError(
+        'Must provide oldPassword, newPassword and passwordConfirm fields',
+        400,
+      ),
+    );
+  }
+
+  //2 if oldpassword == stored password
+  const user = await User.findById(req.user._id).select('+password');
+  console.log(user);
+  if (!(await user.correctPassword(oldPassword, user.password))) {
+    return next(new AppError('Old Password does not correct', 401));
+  }
+
+  //3 check if new password == old Password
+  if (await user.correctPassword(newPassword, user.password)) {
+    return next(
+      new AppError('New password must be different from the old password', 400),
+    );
+  }
+
+  //4 save new password
+  user.password = newPassword;
+  user.passwordConfirm = passwordConfirm;
+  await user.save({ validateBeforeSave: true }); // ==   await user.save();
+
+  //5 genrate new token
+  const token = await getToken(user._id.toString());
+
+  res.status(200).json({
+    status: 'success',
+    token,
+    message: 'Password Changned Successfully',
+  });
+});
