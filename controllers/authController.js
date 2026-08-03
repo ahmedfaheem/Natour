@@ -12,6 +12,26 @@ const getToken = async function (id) {
   });
 };
 
+const createSendToken = async (user, statusCode, res) => {
+  const token = await getToken(user._id.toString());
+  const cookieOptions = {
+    httpOnly: true, // client can not modify or add it
+    secure: process.env.NODE_ENV === 'development' ? false : true, // send in  http in dev and https in prod
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIES_EXPIERS_IN * 24 * 60 * 60 * 1000, // in milleseconds
+    ),
+  };
+  res.cookie('jwt', token, cookieOptions);
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user: user,
+    },
+  });
+};
+
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -21,16 +41,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
     passwordChangeAt: req.body.passwordChangeAt,
   });
-
-  const token = await getToken(newUser._id.toString());
-
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  newUser.password = undefined;
+  await createSendToken(newUser, 201, res);
 });
 
 exports.signin = catchAsync(async (req, res, next) => {
@@ -47,12 +59,7 @@ exports.signin = catchAsync(async (req, res, next) => {
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Invalid Email or Password', 401));
   }
-  const token = await getToken(user._id.toString());
-
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  await createSendToken(user, 200, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -195,13 +202,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   //5 update passwordChangeAt
 
   //6 login with jwt
-  const token = await getToken(user._id.toString());
-
-  res.status(200).json({
-    status: 'success',
-    token,
-    message: 'Password Changned Successfully',
-  });
+  await createSendToken(user, 200, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -235,12 +236,6 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   user.passwordConfirm = passwordConfirm;
   await user.save({ validateBeforeSave: true }); // ==   await user.save();
 
-  //5 genrate new token
-  const token = await getToken(user._id.toString());
-
-  res.status(200).json({
-    status: 'success',
-    token,
-    message: 'Password Changned Successfully',
-  });
+  //5 response with sending new token
+  await createSendToken(user, 200, res);
 });
