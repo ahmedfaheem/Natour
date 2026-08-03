@@ -12,6 +12,7 @@ const reateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const xss = require('xss-clean');
 const mongooseSanitize = require('express-mongo-sanitize');
+const hpp = require('hpp');
 /*
 200 ok and return data   get
 201 created     create
@@ -36,7 +37,21 @@ app.use(express.json({ limit: '10kb' }));
 // parse req.query so can use price[gte]=100 which will be {price: {gte: 100}} and need to replce with $gte
 app.set('query parser', (str) => qs.parse(str));
 
-//Data sanitization against NoSQL query injection
+// HTTP Parameter Pollution which prevent send 2 query with same name and if sent get last one unless add whitelist
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'difficulty',
+      'ratingsAverage',
+      'price',
+      'ratingsQuantity',
+      'maxGroupSize',
+    ],
+  }),
+);
+
+//Data sanitization against NoSQL query injection express@4 only
 app.use(mongooseSanitize());
 
 //Data sanitization against XSS
