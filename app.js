@@ -10,7 +10,8 @@ const userRouter = require('./routes/userRoutes');
 const AppError = require('./utils/AppError');
 const reateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-
+const xss = require('xss-clean');
+const mongooseSanitize = require('express-mongo-sanitize');
 /*
 200 ok and return data   get
 201 created     create
@@ -34,6 +35,12 @@ app.use(express.json({ limit: '10kb' }));
 
 // parse req.query so can use price[gte]=100 which will be {price: {gte: 100}} and need to replce with $gte
 app.set('query parser', (str) => qs.parse(str));
+
+//Data sanitization against NoSQL query injection
+app.use(mongooseSanitize());
+
+//Data sanitization against XSS
+app.use(xss());
 
 // development logging
 if (process.env.NODE_ENV === 'development') {
