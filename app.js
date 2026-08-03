@@ -9,6 +9,7 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const AppError = require('./utils/AppError');
 const reateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 /*
 200 ok and return data   get
@@ -24,15 +25,17 @@ const reateLimit = require('express-rate-limit');
 */
 
 //1- Gloval Middleware
-app.use(express.json()); // any req body must be json so we can get req.body
-// app.use((req, res, next) => {
-//   console.log('First Middleware - applied to all routes');
 
-//   next(); // next middleware
-// });
-// parse req.query
+// add many http security headers
+app.use(helmet());
+
+// Body Parser: any req body must be json so we can get req.body
+app.use(express.json());
+
+// parse req.query so can use price[gte]=100 which will be {price: {gte: 100}} and need to replce with $gte
 app.set('query parser', (str) => qs.parse(str));
 
+// development logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
@@ -40,19 +43,25 @@ if (process.env.NODE_ENV === 'development') {
 // static middleware to access files
 app.use(express.static(Path.join(__dirname, 'public')));
 
-app.use((req, res, next) => {
-  req.TimeRequest = new Date().toISOString();
-  next(); // next middleware
-});
-
 // implement ratelimiting
-
 const rateLimter = reateLimit({
   limit: 100,
   windowMs: 60 * 60 * 1000, // in mille
 });
 
 app.use('/api', rateLimter); // apply for all /api requests
+
+// test middleware
+app.use((req, res, next) => {
+  req.TimeRequest = new Date().toISOString();
+  next(); // next middleware
+});
+
+// app.use((req, res, next) => {
+//   console.log('First Middleware - applied to all routes');
+
+//   next(); // next middleware
+// })
 
 // 3- Routes
 app.use('/api/v1/tours', tourRouter);
