@@ -8,6 +8,7 @@ const ErrorGlobalHandeler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const AppError = require('./utils/AppError');
+const reateLimit = require('express-rate-limit');
 
 /*
 200 ok and return data   get
@@ -22,7 +23,7 @@ const AppError = require('./utils/AppError');
 
 */
 
-//1- Middleware
+//1- Gloval Middleware
 app.use(express.json()); // any req body must be json so we can get req.body
 // app.use((req, res, next) => {
 //   console.log('First Middleware - applied to all routes');
@@ -43,6 +44,15 @@ app.use((req, res, next) => {
   req.TimeRequest = new Date().toISOString();
   next(); // next middleware
 });
+
+// implement ratelimiting
+
+const rateLimter = reateLimit({
+  limit: 100,
+  windowMs: 60 * 60 * 1000, // in mille
+});
+
+app.use('/api', rateLimter); // apply for all /api requests
 
 // 3- Routes
 app.use('/api/v1/tours', tourRouter);
