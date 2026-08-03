@@ -30,7 +30,7 @@ const helmet = require('helmet');
 app.use(helmet());
 
 // Body Parser: any req body must be json so we can get req.body
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
 
 // parse req.query so can use price[gte]=100 which will be {price: {gte: 100}} and need to replce with $gte
 app.set('query parser', (str) => qs.parse(str));
