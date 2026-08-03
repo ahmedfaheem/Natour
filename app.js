@@ -13,6 +13,7 @@ const helmet = require('helmet');
 const xss = require('xss-clean');
 const mongooseSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
+const cors = require('cors');
 /*
 200 ok and return data   get
 201 created     create
@@ -27,7 +28,13 @@ const hpp = require('hpp');
 */
 
 //1- Gloval Middleware
-
+// make browser allow requests only from localhost:5173  and it also allowed in postman and another agents
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  }),
+);
 // add many http security headers
 app.use(helmet());
 
