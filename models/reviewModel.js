@@ -37,10 +37,10 @@ reviewSchema.pre(/^find/, function () {
     path: 'user',
     select: 'name photo',
   })
-    .populate({
-      path: 'tour',
-      select: 'name',
-    })
+    // .populate({
+    //   path: 'tour',
+    //   select: 'name',
+    // })
     .select('-__v');
 });
 

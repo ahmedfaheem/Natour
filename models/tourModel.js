@@ -120,6 +120,13 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+// Virtual population to get all reviews
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 // Document Middleware
 // work only with .create and .save not with insertOne or Many
 tourSchema.pre('save', function () {
