@@ -1,8 +1,13 @@
 const express = require('express');
 const tourController = require('../controllers/tourController');
 const authController = require('../controllers/authController');
-
+const reviewRoutes = require('./reviewRoutes');
 const Router = express.Router();
+
+// POST api/v1/tours/99965/reviews
+// GET api/v1/tours/99965/reviews
+// use mergeParams to pass this params
+Router.use('/:tourId/reviews', reviewRoutes);
 
 // Param Middleware
 // Router.param('id', tourController.checkID);

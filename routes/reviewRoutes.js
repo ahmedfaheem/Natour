@@ -1,7 +1,15 @@
 const express = require('express');
 const reviewController = require('../controllers/reviewController');
 const authController = require('../controllers/authController');
-const Router = express.Router();
+const Router = express.Router({ mergeParams: true });
+
+// 2 Way works
+
+// POST api/v1/tours/99965/reviews
+// GET api/v1/tours/99965/reviews
+
+// POST api/v1/reviews
+// GET api/v1/reviews
 
 Router.route('/')
   .get(reviewController.getAll)
