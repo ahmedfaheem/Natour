@@ -6,7 +6,9 @@ const fs = require('fs');
 dotenv.config({ path: './config.env' });
 
 if (process.env.DNS_SERVERS) {
-  dns.setServers(process.env.DNS_SERVERS.split(',').map((server) => server.trim()));
+  dns.setServers(
+    process.env.DNS_SERVERS.split(',').map((server) => server.trim()),
+  );
 }
 const mongoose = require('mongoose');
 const Tour = require('../../models/tourModel');
@@ -23,7 +25,7 @@ mongoose
     process.exit(1); // exit the process if failed to connect
   });
 
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours-simple.json`));
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`));
 
 const deleteTours = async () => {
   try {
