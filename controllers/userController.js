@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
+const handlerFactory = require('./handlerFactory');
 
 const filterObject = (obj, ...allowedFields) => {
   const newObj = {};
@@ -77,9 +78,4 @@ exports.updateUser = (req, res) => {
   });
 };
 
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'fail',
-    message: 'Handel not defined',
-  });
-};
+exports.deleteUser = handlerFactory.deleteOne(User);
