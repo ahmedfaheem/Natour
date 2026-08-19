@@ -64,18 +64,8 @@ exports.getUserById = (req, res) => {
   });
 };
 
-exports.createUser = (req, res) => {
-  res.status(500).json({
-    status: 'fail',
-    message: 'Handel not defined',
-  });
-};
+exports.createUser = handlerFactory.createOne(User);
 
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'fail',
-    message: 'Handel not defined',
-  });
-};
+exports.updateUser = handlerFactory.updateOne(User);
 
 exports.deleteUser = handlerFactory.deleteOne(User);

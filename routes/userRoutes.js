@@ -22,7 +22,7 @@ Router.route('/')
 
 Router.route('/:id')
   .get(userController.getUserById)
-  .patch(userController.updateUser)
+  .patch(userController.updateUser) // not use for update password becasue findByIdAndUpdate not call save middleware
   .delete(userController.deleteUser);
 
 module.exports = Router;

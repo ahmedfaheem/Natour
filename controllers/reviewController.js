@@ -14,16 +14,24 @@ exports.getAll = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.create = catchAsync(async (req, res, next) => {
+// exports.create = catchAsync(async (req, res, next) => {
+//   if (!req.body.user) req.body.user = req.user._id;
+//   if (!req.body.tour) req.body.tour = req.params.tourId;
+//   const review = await Review.create(req.body);
+//   res.status(200).json({
+//     status: 'success',
+//     date: {
+//       review,
+//     },
+//   });
+// });
+
+exports.setTourUserIDs = (req, res, next) => {
   if (!req.body.user) req.body.user = req.user._id;
   if (!req.body.tour) req.body.tour = req.params.tourId;
-  const review = await Review.create(req.body);
-  res.status(200).json({
-    status: 'success',
-    date: {
-      review,
-    },
-  });
-});
+  next();
+};
+exports.create = handlerFactory.createOne(Review);
+exports.updateReview = handlerFactory.updateOne(Review);
 
 exports.delete = handlerFactory.deleteOne(Review);
