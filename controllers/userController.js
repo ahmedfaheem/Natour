@@ -24,6 +24,12 @@ const filterObject = (obj, ...allowedFields) => {
 
 exports.getAllUsers = handlerFactory.getAll(User);
 
+// add before getById to get currently log in user
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user._id;
+  next();
+};
+
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1) check if user post password
   if (req.body.password || req.body.passwordConfirm) {
