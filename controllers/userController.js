@@ -11,16 +11,18 @@ const filterObject = (obj, ...allowedFields) => {
 
   return newObj;
 };
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-  res.status(200).json({
-    status: 'success',
-    data: {
-      total: users.length,
-      users,
-    },
-  });
-});
+// exports.getAllUsers = catchAsync(async (req, res, next) => {
+//   const users = await User.find();
+//   res.status(200).json({
+//     status: 'success',
+//     data: {
+//       total: users.length,
+//       users,
+//     },
+//   });
+// });
+
+exports.getAllUsers = handlerFactory.getAll(User);
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1) check if user post password
@@ -64,7 +66,14 @@ exports.getUserById = (req, res) => {
   });
 };
 
-exports.createUser = handlerFactory.createOne(User);
+exports.getUserById = handlerFactory.getOne(User);
+
+exports.createUser = (req, res) => {
+  res.status(500).json({
+    status: 'fail',
+    message: 'Handel not defined / please use /signup',
+  });
+};
 
 exports.updateUser = handlerFactory.updateOne(User);
 
