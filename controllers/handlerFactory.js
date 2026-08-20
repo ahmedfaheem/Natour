@@ -51,6 +51,7 @@ exports.getAll = (Model) =>
       .limitFields()
       .pagination();
     const Docs = await APIDoc.query;
+    // const Docs = await APIDoc.query.explain();
 
     const totalDocuments = await Model.countDocuments();
     const totalPages = Math.ceil(totalDocuments / APIDoc.limit);
