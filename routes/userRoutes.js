@@ -5,25 +5,21 @@ const Router = express.Router();
 
 Router.post('/signup', authController.signup);
 Router.post('/signin', authController.signin);
-
 Router.post('/forgotPassword', authController.forgotPassword);
 Router.patch('/resetPassword/:token', authController.resetPassword);
-Router.patch(
-  '/updateMyPassword',
-  authController.protect,
-  authController.updatePassword,
-);
-Router.patch('/updateMe', authController.protect, userController.updateMe);
-Router.delete('/deleteMe', authController.protect, userController.deleteMe);
-Router.get(
-  '/me',
-  authController.protect,
-  userController.getMe,
-  userController.getUserById,
-);
+
+// this middleware will apllied to any routes after this line
+Router.use(authController.protect);
+
+Router.patch('/updateMyPassword', authController.updatePassword);
+Router.patch('/updateMe', userController.updateMe);
+Router.delete('/deleteMe', userController.deleteMe);
+Router.get('/me', userController.getMe, userController.getUserById);
+
+Router.use(authController.restrictTo('admin'));
 
 Router.route('/')
-  .get(authController.protect, userController.getAllUsers)
+  .get(userController.getAllUsers)
   .post(userController.createUser);
 
 Router.route('/:id')

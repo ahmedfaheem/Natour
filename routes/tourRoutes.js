@@ -18,11 +18,19 @@ Router.route('/top-5-cheap').get(
 );
 
 Router.route('/stats').get(tourController.getTourStats);
-Router.route('/monthly-plan/:year').get(tourController.getMonthlyPaln);
+Router.route('/monthly-plan/:year').get(
+  authController.protect,
+  authController.restrictTo('admin', 'lead-guide', 'guide'),
+  tourController.getMonthlyPaln,
+);
 
 Router.route('/')
   .get(tourController.getAllTours)
-  .post(tourController.createTour);
+  .post(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide'),
+    tourController.createTour,
+  );
 
 // app.use((req, res, next) => {
 //   console.log(
@@ -34,10 +42,14 @@ Router.route('/')
 
 Router.route('/:id')
   .get(tourController.getTourByID)
-  .patch(tourController.updateTour)
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide'),
+    tourController.updateTour,
+  )
   .delete(
     authController.protect,
-    authController.restrictTo('admin', 'lead-guid'),
+    authController.restrictTo('admin', 'lead-guide'),
     tourController.deleteTour,
   );
 
