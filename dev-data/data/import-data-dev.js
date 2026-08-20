@@ -12,6 +12,8 @@ if (process.env.DNS_SERVERS) {
 }
 const mongoose = require('mongoose');
 const Tour = require('../../models/tourModel');
+const Review = require('../../models/reviewModel');
+const User = require('../../models/userModel');
 
 const DB = process.env.DB_GLOBAL.replace('<PASSWORD>', process.env.DB_PASS);
 mongoose
@@ -26,10 +28,15 @@ mongoose
   });
 
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`));
+const reviews = JSON.parse(fs.readFileSync(`${__dirname}/reviews.json`));
+const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`));
 
 const deleteTours = async () => {
   try {
     await Tour.deleteMany();
+    await User.deleteMany();
+    await Review.deleteMany();
+
     console.log('All Tours Deleted');
   } catch (err) {
     console.log('Error On Deleteting Tours', err);
@@ -40,6 +47,9 @@ const deleteTours = async () => {
 const importTours = async () => {
   try {
     await Tour.create(tours);
+    await User.create(users, { validateBeforeSave: false });
+    await Review.create(reviews);
+
     console.log('All Tours Imported');
   } catch (err) {
     console.log('Error On Importing Data', err);
