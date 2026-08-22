@@ -282,3 +282,42 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
     data: tours,
   });
 });
+
+// /distances/:latlang/unit/:unit
+//{{URL}}/api/v1/tours/distances/35.69299463209881,-115.36193847656251/unit/mi
+
+exports.getDistances = catchAsync(async (req, res, next) => {
+  const { latlang, unit } = req.params;
+  const [lat, lng] = latlang.split(',');
+  if (!lat || !lng) {
+    return new AppError(
+      'Provide Lattiude and Langitude in lat,lang format',
+      400,
+    );
+  }
+  // in mile : km
+  const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
+
+  // must set the geospatial index for startLocation field so $geoNear know that to hit it
+  const tours = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [lng * 1, lat * 1], // cast to number
+        },
+        distanceField: 'distance',
+        distanceMultiplier: multiplier, // to get the scale in spicifed unit
+      },
+    },
+    {
+      $project: { distance: 1, name: 1 },
+    },
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: tours,
+  });
+});

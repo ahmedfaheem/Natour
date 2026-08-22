@@ -56,4 +56,6 @@ Router.route('/:id')
 Router.route('/tour-within/:distance/center/:latlang/unit/:unit').get(
   tourController.getToursWithin,
 );
+
+Router.route('/distances/:latlang/unit/:unit').get(tourController.getDistances);
 module.exports = Router;
