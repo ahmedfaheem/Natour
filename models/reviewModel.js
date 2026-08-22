@@ -49,18 +49,25 @@ reviewSchema.statics.calcAvgRating = async function (tourId) {
       },
     },
   ]);
+  if (stats.length > 0) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsAverage: Math.round(stats[0].avgRating),
+      ratingsQuantity: stats[0].nRating,
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsAverage: 4.5,
+      ratingsQuantity: 0,
+    });
+  }
 
-  await Tour.findByIdAndUpdate(tourId, {
-    ratingsAverage: Math.round(stats[0].avgRating),
-    ratingsQuantity: stats[0].nRating,
-  });
   console.log(stats);
 };
 
-reviewSchema.post('save', function () {
+reviewSchema.post('save', async function () {
   // Can not use Review Before Declaring so this here point to document so use this.constructor which get the Model
   //Review.calcAvgRating();
-  this.constructor.calcAvgRating(this.tour);
+  await this.constructor.calcAvgRating(this.tour);
 });
 
 reviewSchema.pre(/^find/, function () {
@@ -73,6 +80,20 @@ reviewSchema.pre(/^find/, function () {
     //   select: 'name',
     // })
     .select('-__v');
+});
+
+// on Delete and Update, update rating of Tour
+// first get tour doucment on pre then pass to query object to post middleware
+// another solution can use in post this.query() to get id of review then findById to get all data
+// then calc Stats
+reviewSchema.pre(/^findOneAnd/, async function () {
+  this.r = await this.model.findById(this.getQuery()._id);
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+  if (this.r) {
+    await this.model.calcAvgRating(this.r.tour);
+  }
 });
 
 const Review = mongoose.model('Review', reviewSchema);
