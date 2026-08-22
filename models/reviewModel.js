@@ -11,6 +11,7 @@ const reviewSchema = new mongoose.Schema(
       type: Number,
       min: 1,
       max: 5,
+      set: (val) => Math.round(val * 10) / 10,
     },
     tour: {
       type: mongoose.Schema.ObjectId,
@@ -51,7 +52,7 @@ reviewSchema.statics.calcAvgRating = async function (tourId) {
   ]);
   if (stats.length > 0) {
     await Tour.findByIdAndUpdate(tourId, {
-      ratingsAverage: Math.round(stats[0].avgRating),
+      ratingsAverage: stats[0].avgRating,
       ratingsQuantity: stats[0].nRating,
     });
   } else {
@@ -61,7 +62,7 @@ reviewSchema.statics.calcAvgRating = async function (tourId) {
     });
   }
 
-  console.log(stats);
+  //console.log(stats);
 };
 
 reviewSchema.post('save', async function () {
@@ -95,6 +96,10 @@ reviewSchema.post(/^findOneAnd/, async function () {
     await this.model.calcAvgRating(this.r.tour);
   }
 });
+
+// prevent user from make more than one review
+// must use unique compound indexes
+reviewSchema.index({ user: 1, tour: 1 }, { unique: true });
 
 const Review = mongoose.model('Review', reviewSchema);
 
