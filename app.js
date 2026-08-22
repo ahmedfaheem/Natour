@@ -8,6 +8,7 @@ const ErrorGlobalHandeler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const viewRouter = require('./routes/viewRoutes');
 const AppError = require('./utils/AppError');
 const reateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -101,24 +102,8 @@ app.use((req, res, next) => {
 // })
 
 // 3- Routes
-app.get('/', (req, res, next) => {
-  res.status(200).render('base', {
-    title: 'Home Page',
-  });
-});
 
-app.get('/overview', (req, res, next) => {
-  res.status(200).render('overview', {
-    title: 'All Tours',
-  });
-});
-
-app.get('/tour', (req, res, next) => {
-  res.status(200).render('tour', {
-    title: 'Tour Details',
-  });
-});
-
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
