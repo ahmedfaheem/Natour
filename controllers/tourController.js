@@ -254,3 +254,31 @@ exports.getMonthlyPaln = catchAsync(async (req, res, next) => {
     data: plan,
   });
 });
+// /tour-within/:distance/center/:latlang/unit/:unit
+//{{URL}}/api/v1/tours/tour-within/50/center/35.69299463209881,-115.36193847656251/unit/mi
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlang, unit } = req.params;
+  const [lat, lng] = latlang.split(',');
+  if (!lat || !lng) {
+    return new AppError(
+      'Provide Lattiude and Langitude in lat,lang format',
+      400,
+    );
+  }
+
+  // need raduis in proper format which is in radians
+  // in mile divide by 3963.2 and if in km  divide by 6378.1
+  const raduis = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+
+  const tours = await Tour.find({
+    startLocation: {
+      $geoWithin: { $centerSphere: [[lng, lat], raduis] },
+    },
+  });
+
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: tours,
+  });
+});

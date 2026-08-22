@@ -53,4 +53,7 @@ Router.route('/:id')
     tourController.deleteTour,
   );
 
+Router.route('/tour-within/:distance/center/:latlang/unit/:unit').get(
+  tourController.getToursWithin,
+);
 module.exports = Router;

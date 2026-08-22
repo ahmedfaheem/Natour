@@ -116,6 +116,10 @@ const tourSchema = new mongoose.Schema(
   },
 );
 
+//2dsphere is not what makes the query valid. It makes the geospatial query efficient.
+// for performance
+tourSchema.index({ startLocation: '2dsphere' });
+
 // 1 ascending -1 desending
 // tourSchema.index({ price: 1 });
 tourSchema.index({ price: 1, ratingsAverage: -1 });
