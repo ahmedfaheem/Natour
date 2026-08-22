@@ -35,6 +35,10 @@ app.set('view engine', 'pug');
 app.set('views', Path.join(__dirname, 'views'));
 
 //1- Gloval Middleware
+
+// static middleware to access files
+app.use(express.static(Path.join(__dirname, 'public')));
+
 // make browser allow requests only from localhost:5173  and it also allowed in postman and another agents
 app.use(
   cors({
@@ -76,9 +80,6 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// static middleware to access files
-app.use(express.static(Path.join(__dirname, 'public')));
-
 // implement ratelimiting
 const rateLimter = reateLimit({
   limit: 100,
@@ -101,7 +102,9 @@ app.use((req, res, next) => {
 
 // 3- Routes
 app.get('/', (req, res, next) => {
-  res.status(200).render('base');
+  res.status(200).render('base', {
+    title: 'Home Page',
+  });
 });
 
 app.use('/api/v1/tours', tourRouter);
