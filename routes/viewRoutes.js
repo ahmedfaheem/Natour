@@ -5,6 +5,6 @@ const Router = express.Router();
 
 Router.get('/', viewController.getOverview);
 
-Router.get('/tour', viewController.getTour);
+Router.get('/tour/:slug', viewController.getTour);
 
 module.exports = Router;
