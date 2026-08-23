@@ -21,5 +21,12 @@ exports.getTour = catchAsync(async (req, res, next) => {
   res.status(200).render('tour', {
     title: `${tour.name} Tour`,
     tour,
+    mapboxAccessToken: process.env.MAPBOX_ACCESS_TOKEN,
   });
 });
+
+exports.getLoginForm = (req, res) => {
+  res.status(200).render('login', {
+    title: 'Log into your account',
+  });
+};
