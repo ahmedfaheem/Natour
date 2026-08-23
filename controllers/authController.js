@@ -118,28 +118,41 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.isLoggedIn = catchAsync(async (req, res, next) => {
-  if (req.cookies.jwt) {
-    const decodedData = await promisify(JWT.verify)(
-      req.cookies.jwt,
-      process.env.JWT_SECRET,
-    );
+exports.isLoggedIn = async (req, res, next) => {
+  try {
+    if (req.cookies.jwt) {
+      const decodedData = await promisify(JWT.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET,
+      );
 
-    const user = await User.findById(decodedData.id);
-    if (!user) {
-      return next();
+      const user = await User.findById(decodedData.id);
+      if (!user) {
+        return next();
+      }
+
+      if (user.isPasswordChanged(decodedData.iat)) {
+        return next();
+      }
+
+      res.locals.user = user;
     }
-
-    if (user.isPasswordChanged(decodedData.iat)) {
-      return next();
-    }
-
-    res.locals.user = user;
+  } catch (err) {
+    return next();
   }
 
-  next();
-});
+  return next();
+};
 
+exports.logout = (req, res, next) => {
+  res.cookie('jwt', 'loggedout', {
+    httpOnky: true,
+    expires: new Date(Date.now() + 10 * 1000),
+  });
+  res.status(200).json({
+    status: 'success',
+  });
+};
 exports.restrictTo =
   (...roles) =>
   (req, res, next) => {

@@ -24194,7 +24194,7 @@
             showAlert("success", "Logged in successfully!");
             window.setTimeout(() => {
               location.assign("/");
-            }, 1500);
+            }, 200);
           }
         } catch (err) {
           showAlert("error", err.response.data.message);
