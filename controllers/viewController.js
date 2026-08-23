@@ -1,3 +1,4 @@
+/* eslint-disable */
 const Tour = require('../models/tourModel');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');

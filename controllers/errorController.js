@@ -1,27 +1,49 @@
 const AppError = require('../utils/AppError');
 
-const sendErrorProd = (err, res) => {
+const sendErrorProd = (err, req, res) => {
+  if (req.originalUrl.startsWith('/api')) {
+    if (err.isOperational === true) {
+      res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message,
+      });
+    } else {
+      console.error(err);
+      res.status(err.statusCode).json({
+        status: err.status,
+        message: 'Somthing went wrong',
+      });
+    }
+  }
+
   if (err.isOperational === true) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message,
+    res.status(err.statusCode).render('error', {
+      title: 'Something went wrong!',
+      msg: err.message,
     });
   } else {
     console.error(err);
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: 'Somthing went wrong',
+    res.status(err.statusCode).render('error', {
+      title: 'Something went wrong!',
+      msg: 'Please try again later.',
     });
   }
 };
 
-const sendErrorDev = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack,
-  });
+const sendErrorDev = (err, req, res) => {
+  if (req.originalUrl.startsWith('/api')) {
+    res.status(err.statusCode).json({
+      status: err.status,
+      error: err,
+      message: err.message,
+      stack: err.stack,
+    });
+  } else {
+    res.status(err.statusCode).render('error', {
+      title: 'Something went wrong!',
+      msg: err.message,
+    });
+  }
 };
 
 const handelCastError = (err) =>
@@ -54,7 +76,7 @@ module.exports = (error, req, res, next) => {
   error.status = error.status || 'fail';
 
   if (process.env.NODE_ENV === 'development') {
-    sendErrorDev(error, res);
+    sendErrorDev(error, req, res);
   } else if (process.env.NODE_ENV === 'production') {
     if (error.name === 'CastError') error = handelCastError(error);
     if (error.code === 11000) error = handelDuplicateError(error);
@@ -63,6 +85,6 @@ module.exports = (error, req, res, next) => {
     if (error.name === 'TokenExpiredError')
       error = handleJWTTokenExpieredError(error);
 
-    sendErrorProd(error, res);
+    sendErrorProd(error, req, res);
   }
 };
