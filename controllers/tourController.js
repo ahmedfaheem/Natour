@@ -24,7 +24,31 @@ exports.uploadTourImages = upload.fields([
 ]);
 
 exports.resizeToursImages = catchAsync(async (req, res, next) => {
-  console.log(req.files);
+  // console.log(req.files);
+  if (!req.files.imageCover || !req.files.images) next();
+
+  //1 resize imageCover
+  req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1333)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`./public/img/tours/${req.body.imageCover}`);
+
+  //2 resize images
+  req.body.images = [];
+  const imagesPromises = req.files.images.map(async (img, i) => {
+    const name = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
+    await sharp(img.buffer)
+      .resize(2000, 1333)
+      .toFormat('jpeg')
+      .jpeg({ quality: 90 })
+      .toFile(`./public/img/tours/${name}`);
+    req.body.images.push(name);
+  });
+
+  await Promise.all(imagesPromises);
+
   next();
 });
 exports.aliasTopCheap = async (req, res, next) => {
