@@ -20189,7 +20189,7 @@
         const el = document.querySelector(".alert");
         if (el) el.parentElement.removeChild(el);
       };
-      showAlert = (type, msg, time = 7) => {
+      showAlert = (type, msg, time = 2) => {
         hideAlert();
         const markup = `<div class="alert alert--${type}">${msg}</div>`;
         document.querySelector("body").insertAdjacentHTML("afterbegin", markup);
@@ -24215,6 +24215,50 @@
     }
   });
 
+  // public/js/updateSettings.js
+  var updateData, updatePassword;
+  var init_updateSettings = __esm({
+    "public/js/updateSettings.js"() {
+      init_alerts();
+      init_axios2();
+      updateData = async (data) => {
+        const { name, email } = data;
+        try {
+          const res = await axios_default({
+            method: "PATCH",
+            url: "/api/v1/users/updateMe",
+            data: {
+              name,
+              email
+            }
+          });
+          if (res.data.status === "success")
+            showAlert("success", "Data updated successfully!");
+        } catch (err) {
+          showAlert("error", err.response.data.message);
+        }
+      };
+      updatePassword = async (data) => {
+        const { passwordCurrent, password, passwordConfirm } = data;
+        try {
+          const res = await axios_default({
+            method: "PATCH",
+            url: "/api/v1/users/updateMyPassword",
+            data: {
+              oldPassword: passwordCurrent,
+              newPassword: password,
+              passwordConfirm
+            }
+          });
+          if (res.data.status === "success")
+            showAlert("success", "Password updated successfully!");
+        } catch (err) {
+          showAlert("error", err.response.data.message);
+        }
+      };
+    }
+  });
+
   // public/js/mapbox.js
   var displayMap;
   var init_mapbox = __esm({
@@ -24265,9 +24309,12 @@
     "public/js/index.js"() {
       var import_stable = __toESM(require_stable());
       init_login();
+      init_updateSettings();
       init_mapbox();
       var loginForm = document.querySelector(".login-form .form");
       var logOutBtn = document.querySelector(".nav__el--logout");
+      var userDataForm = document.querySelector(".form-user-data");
+      var userPasswordForm = document.querySelector(".form-user-settings");
       var mapBox = document.getElementById("map");
       if (mapBox) {
         const locations = JSON.parse(mapBox.dataset.locations);
@@ -24275,14 +24322,36 @@
         displayMap(locations, mapBoxToken);
       }
       if (loginForm) {
-        loginForm.addEventListener("submit", (e) => {
+        loginForm.addEventListener("submit", async (e) => {
           e.preventDefault();
           const email = document.getElementById("email").value;
           const password = document.getElementById("password").value;
-          login(email, password);
+          await login(email, password);
         });
       }
       if (logOutBtn) logOutBtn.addEventListener("click", logout);
+      if (userDataForm) {
+        userDataForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const name = document.getElementById("name").value;
+          const email = document.getElementById("email").value;
+          await updateData({ name, email });
+        });
+      }
+      if (userPasswordForm) {
+        userPasswordForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          document.querySelector(".form-user-settings .btn").textContent = "Updating...";
+          const passwordCurrent = document.getElementById("password-current").value;
+          const password = document.getElementById("password").value;
+          const passwordConfirm = document.getElementById("password-confirm").value;
+          await updatePassword({ passwordCurrent, password, passwordConfirm });
+          document.querySelector(".form-user-settings .btn").textContent = "Save Password";
+          document.getElementById("password-current").value = "";
+          document.getElementById("password").value = "";
+          document.getElementById("password-confirm").value = "";
+        });
+      }
     }
   });
   require_index();
