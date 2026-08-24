@@ -3,16 +3,26 @@ const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
 const handlerFactory = require('./handlerFactory');
 const multer = require('multer');
+const sharp = require('sharp');
 
-const fileStorage = multer.diskStorage({
-  filename: (req, file, cp) => {
-    const name = `user-${req.user.id}-${Date.now()}.${file.mimetype.split('/')[1]}`;
-    cp(null, name);
-  },
-  destination: (req, file, cp) => {
-    cp(null, './public/img/users');
-  },
-});
+/*
+Upload file with multer and check if is image file and store in memory for performance 
+then resize it with sharp package and convert to jpeg format and make sharp pakage to store in disk
+
+
+*/
+
+// const fileStorage = multer.diskStorage({
+//   filename: (req, file, cp) => {
+//     const name = `user-${req.user.id}-${Date.now()}.${file.mimetype.split('/')[1]}`;
+//     cp(null, name);
+//   },
+//   destination: (req, file, cp) => {
+//     cp(null, './public/img/users');
+//   },
+// });
+
+const fileStorage = multer.memoryStorage(); // save in meomory instead of in desk for performance
 
 const fileFilter = (req, file, cp) => {
   const ext = file.mimetype.split('/')[0];
@@ -22,6 +32,18 @@ const fileFilter = (req, file, cp) => {
   cp(null, true);
 };
 const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
+
+exports.resizeUserImage = (req, res, next) => {
+  if (!req.file) return next();
+  req.file.name = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`./public/img/users/${req.file.name}`);
+  next();
+};
 
 exports.uploadUserPhoto = upload.single('photo');
 
@@ -53,7 +75,7 @@ exports.getMe = (req, res, next) => {
 };
 
 exports.updateMe = catchAsync(async (req, res, next) => {
-  console.log(req.file, req.body);
+  // console.log(req.file, req.body);
   // 1) check if user post password
   if (req.body.password || req.body.passwordConfirm) {
     return next(
@@ -65,7 +87,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   //2) filter body Object
   const filterdBody = filterObject(req.body, 'name', 'email');
-
+  if (req.file) filterdBody.photo = req.file.name;
   //3) update user
   const user = await User.findByIdAndUpdate(req.user._id, filterdBody, {
     new: true,
