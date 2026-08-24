@@ -24221,16 +24221,12 @@
     "public/js/updateSettings.js"() {
       init_alerts();
       init_axios2();
-      updateData = async (data) => {
-        const { name, email } = data;
+      updateData = async (form) => {
         try {
           const res = await axios_default({
             method: "PATCH",
             url: "/api/v1/users/updateMe",
-            data: {
-              name,
-              email
-            }
+            data: form
           });
           if (res.data.status === "success")
             showAlert("success", "Data updated successfully!");
@@ -24333,9 +24329,11 @@
       if (userDataForm) {
         userDataForm.addEventListener("submit", async (e) => {
           e.preventDefault();
-          const name = document.getElementById("name").value;
-          const email = document.getElementById("email").value;
-          await updateData({ name, email });
+          const form = new FormData();
+          form.append("name", document.getElementById("name").value);
+          form.append("email", document.getElementById("email").value);
+          form.append("photo", document.getElementById("photo").files[0]);
+          await updateData(form);
         });
       }
       if (userPasswordForm) {

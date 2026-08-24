@@ -1,17 +1,12 @@
 /* eslint-disable */
 import { showAlert } from './alerts.js';
 import axios from 'axios';
-export const updateData = async (data) => {
-  const { name, email } = data;
-
+export const updateData = async (form) => {
   try {
     const res = await axios({
       method: 'PATCH',
       url: '/api/v1/users/updateMe',
-      data: {
-        name,
-        email,
-      },
+      data: form,
     });
 
     if (res.data.status === 'success')

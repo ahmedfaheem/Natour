@@ -32,11 +32,12 @@ if (logOutBtn) logOutBtn.addEventListener('click', logout);
 if (userDataForm) {
   userDataForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    // form.append('photo', document.getElementById('photo').files[0]);
+    const form = new FormData();
+    form.append('name', document.getElementById('name').value);
+    form.append('email', document.getElementById('email').value);
+    form.append('photo', document.getElementById('photo').files[0]);
 
-    await updateData({ name, email });
+    await updateData(form);
   });
 }
 
