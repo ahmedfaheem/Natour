@@ -13,7 +13,11 @@ Router.patch('/resetPassword/:token', authController.resetPassword);
 Router.use(authController.protect);
 
 Router.patch('/updateMyPassword', authController.updatePassword);
-Router.patch('/updateMe', userController.updateMe);
+Router.patch(
+  '/updateMe',
+  userController.uploadUserPhoto,
+  userController.updateMe,
+);
 Router.delete('/deleteMe', userController.deleteMe);
 Router.get('/me', userController.getMe, userController.getUserById);
 

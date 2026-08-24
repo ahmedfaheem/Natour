@@ -2,6 +2,28 @@ const User = require('../models/userModel');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
 const handlerFactory = require('./handlerFactory');
+const multer = require('multer');
+
+const fileStorage = multer.diskStorage({
+  filename: (req, file, cp) => {
+    const name = `user-${req.user.id}-${Date.now()}.${file.mimetype.split('/')[1]}`;
+    cp(null, name);
+  },
+  destination: (req, file, cp) => {
+    cp(null, './public/img/users');
+  },
+});
+
+const fileFilter = (req, file, cp) => {
+  const ext = file.mimetype.split('/')[0];
+  if (ext !== 'image') {
+    cp(new AppError('Only Support Image File', 400));
+  }
+  cp(null, true);
+};
+const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
+
+exports.uploadUserPhoto = upload.single('photo');
 
 const filterObject = (obj, ...allowedFields) => {
   const newObj = {};
@@ -31,6 +53,7 @@ exports.getMe = (req, res, next) => {
 };
 
 exports.updateMe = catchAsync(async (req, res, next) => {
+  console.log(req.file, req.body);
   // 1) check if user post password
   if (req.body.password || req.body.passwordConfirm) {
     return next(
