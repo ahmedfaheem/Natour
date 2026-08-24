@@ -3,7 +3,30 @@ const APIFeature = require('../utils/APIFeatures');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
 const handlerFactory = require('./handlerFactory');
+const multer = require('multer');
+const sharp = require('sharp');
 
+const fileStorage = multer.memoryStorage();
+
+const fileFilter = (req, file, cp) => {
+  if (file.mimetype.split('/')[0] !== 'image') {
+    cp(new AppError('Only Support Image Uploading', 400));
+  }
+
+  cp(null, true);
+};
+
+const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
+
+exports.uploadTourImages = upload.fields([
+  { name: 'imageCover', maxCount: 1 },
+  { name: 'images', maxCount: 3 },
+]);
+
+exports.resizeToursImages = catchAsync(async (req, res, next) => {
+  console.log(req.files);
+  next();
+});
 exports.aliasTopCheap = async (req, res, next) => {
   req.query.sort = '-ratingsAverage,price';
   req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
