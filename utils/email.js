@@ -3,7 +3,7 @@ const pug = require('pug');
 const path = require('path');
 const { convert } = require('html-to-text');
 
-exports.module = class Email {
+module.exports = class Email {
   constructor(user, url) {
     this.to = user.email;
     this.url = url;
@@ -29,7 +29,7 @@ exports.module = class Email {
     // 1- render temaplate
     const html = pug.renderFile(
       path.join(__dirname, `../views/email/${template}.pug`),
-      { name: this, url: this.url, subject: this.subject },
+      { name: this.name, url: this.url, subject: this.subject },
     );
     //2- define email options
     const emailOptions = {
@@ -41,7 +41,7 @@ exports.module = class Email {
     };
 
     //3- create transporter and send
-    await this.newTransporter.sendMail(emailOptions);
+    await this.newTransporter().sendMail(emailOptions);
   }
 
   async sendWelcomeEmail() {

@@ -3,7 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 const JWT = require('jsonwebtoken');
 const AppError = require('../utils/AppError');
 const { promisify } = require('util');
-const { sendMail } = require('../utils/email');
+const Email = require('../utils/email');
 const crypto = require('crypto');
 
 const getToken = async function (id) {
@@ -42,6 +42,10 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordChangeAt: req.body.passwordChangeAt,
   });
   newUser.password = undefined;
+  await new Email(
+    newUser,
+    `${req.protocol}://${req.get('host')}/me`,
+  ).sendWelcomeEmail();
   await createSendToken(newUser, 201, res);
 });
 
@@ -192,7 +196,7 @@ If you didn't forget your password, please ignore this email!`;
   };
 
   try {
-    await sendMail(emailOptions);
+    // await sendMail(emailOptions);
 
     res.status(200).json({
       status: 'success',
