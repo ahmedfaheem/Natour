@@ -5,11 +5,13 @@ import 'core-js/stable';
 import { login, logout } from './login.js';
 import { updateData, updatePassword } from './updateSettings.js';
 import { displayMap } from './mapbox';
+import { BookNow } from './stripe';
 const loginForm = document.querySelector('.login-form .form');
 const logOutBtn = document.querySelector('.nav__el--logout');
 const userDataForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-settings');
 const mapBox = document.getElementById('map');
+const BookBtn = document.getElementById('book-tour');
 
 if (mapBox) {
   const locations = JSON.parse(mapBox.dataset.locations);
@@ -55,5 +57,14 @@ if (userPasswordForm) {
     document.getElementById('password-current').value = '';
     document.getElementById('password').value = '';
     document.getElementById('password-confirm').value = '';
+  });
+}
+
+if (BookBtn) {
+  BookBtn.addEventListener('click', async function (el) {
+    const tourId = el.target.dataset.tourid;
+    //   console.log(tourId);
+    el.target.textContent = 'Processing..';
+    await BookNow(tourId);
   });
 }

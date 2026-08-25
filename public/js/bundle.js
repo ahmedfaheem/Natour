@@ -24300,6 +24300,20 @@
     }
   });
 
+  // public/js/stripe.js
+  var BookNow;
+  var init_stripe = __esm({
+    "public/js/stripe.js"() {
+      init_axios2();
+      BookNow = async function(tourId) {
+        const session = await axios_default.get(
+          `/api/v1/bookings/checkout-session/${tourId}`
+        );
+        window.location.href = session.data.data.url;
+      };
+    }
+  });
+
   // public/js/index.js
   var require_index = __commonJS({
     "public/js/index.js"() {
@@ -24307,11 +24321,13 @@
       init_login();
       init_updateSettings();
       init_mapbox();
+      init_stripe();
       var loginForm = document.querySelector(".login-form .form");
       var logOutBtn = document.querySelector(".nav__el--logout");
       var userDataForm = document.querySelector(".form-user-data");
       var userPasswordForm = document.querySelector(".form-user-settings");
       var mapBox = document.getElementById("map");
+      var BookBtn = document.getElementById("book-tour");
       if (mapBox) {
         const locations = JSON.parse(mapBox.dataset.locations);
         const mapBoxToken = mapBox.dataset.mapboxToken;
@@ -24348,6 +24364,13 @@
           document.getElementById("password-current").value = "";
           document.getElementById("password").value = "";
           document.getElementById("password-confirm").value = "";
+        });
+      }
+      if (BookBtn) {
+        BookBtn.addEventListener("click", async function(el) {
+          const tourId = el.target.dataset.tourid;
+          el.target.textContent = "Processing..";
+          await BookNow(tourId);
         });
       }
     }
