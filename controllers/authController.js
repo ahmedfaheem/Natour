@@ -196,7 +196,7 @@ If you didn't forget your password, please ignore this email!`;
   };
 
   try {
-    // await sendMail(emailOptions);
+    await new Email(user, resetURL).sendPasswordResetEmail();
 
     res.status(200).json({
       status: 'success',
