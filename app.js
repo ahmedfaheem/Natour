@@ -4,13 +4,13 @@ const app = express();
 const morgan = require('morgan');
 const Path = require('path');
 const qs = require('qs');
+const compression = require('compression');
 const ErrorGlobalHandeler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
-
 const AppError = require('./utils/AppError');
 const reateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -121,12 +121,16 @@ const rateLimter = reateLimit({
 
 app.use('/api', rateLimter); // apply for all /api requests
 
+// compression middleware for compress responses for performance
+
+app.use(compression());
+
 // test middleware
-app.use((req, res, next) => {
-  req.TimeRequest = new Date().toISOString();
-  // console.log(req.cookies);
-  next(); // next middleware
-});
+// app.use((req, res, next) => {
+//   req.TimeRequest = new Date().toISOString();
+//   // console.log(req.cookies);
+//   next(); // next middleware
+// });
 
 // app.use((req, res, next) => {
 //   console.log('First Middleware - applied to all routes');
