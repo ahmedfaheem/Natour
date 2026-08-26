@@ -41,18 +41,14 @@ app.set('views', Path.join(__dirname, 'views'));
 
 //1- Gloval Middleware
 
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 
 // static middleware to access files
 app.use(express.static(Path.join(__dirname, 'public')));
 
-// make browser allow requests only from localhost:5173  and it also allowed in postman and another agents
-app.use(
-  cors({
-    origin: 'http://localhost:5173',
-    credentials: true,
-  }),
-);
+// make browser allow any origins requests   it also allowed in postman and another agents
+app.use(cors());
+
 // add many http security headers
 // app.use(
 //   helmet({
