@@ -41,6 +41,8 @@ app.set('views', Path.join(__dirname, 'views'));
 
 //1- Gloval Middleware
 
+app.set('trust proxy', true);
+
 // static middleware to access files
 app.use(express.static(Path.join(__dirname, 'public')));
 
@@ -163,5 +165,6 @@ app.use((req, res, next) => {
 });
 
 app.use(ErrorGlobalHandeler);
+
 // 4- Server Configuration
 module.exports = app;

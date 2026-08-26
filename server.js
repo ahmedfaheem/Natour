@@ -50,3 +50,11 @@ process.on('unhandledRejection', (e) => {
     process.exit(1);
   });
 });
+
+// implement SIGTERM Signal -- that  be sent when
+process.on('SIGTERM', () => {
+  console.log('SIGTERM Signal Received');
+  server.close(() => {
+    console.log('All Requests Completed ');
+  });
+});

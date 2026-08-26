@@ -6,6 +6,7 @@
   "author": "Ahmed Faheem",
   "type": "commonjs",
   "scripts": {
+    "start": "node server.js",
     "dev": "nodemon server.js",
     "esbuild:dev": "esbuild public/js/index.js --bundle --outfile=public/js/bundle.js --watch",
     "esbuild:build": "esbuild public/js/index.js --bundle --outfile=public/js/bundle.js --minify"
