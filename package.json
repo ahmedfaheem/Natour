@@ -7,7 +7,8 @@
   "type": "commonjs",
   "scripts": {
     "dev": "nodemon server.js",
-    "bundle:watch": "esbuild public/js/index.js --bundle --outfile=public/js/bundle.js --watch"
+    "esbuild:dev": "esbuild public/js/index.js --bundle --outfile=public/js/bundle.js --watch",
+    "esbuild:build": "esbuild public/js/index.js --bundle --outfile=public/js/bundle.js --minify"
   },
   "dependencies": {
     "axios": "^1.19.0",
