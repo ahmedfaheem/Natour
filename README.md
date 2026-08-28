@@ -2,6 +2,8 @@
 
 A full-featured RESTful API and server-side rendered web app for booking nature tours. Built with **Node.js**, **Express**, and **MongoDB** as part of the [Node.js by Jonas Schmedtmann](https://www.udemy.com/course/nodejs-express-mongodb-bootcamp/) course.
 
+[![Postman Docs](https://img.shields.io/badge/Postman-API%20Docs-orange?logo=postman&logoColor=white)](https://documenter.getpostman.com/view/48604520/2sBYAuSB2G)
+
 ---
 
 ## ✨ Features
