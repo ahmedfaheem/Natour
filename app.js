@@ -19,7 +19,7 @@ const mongooseSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-
+const bookingController = require('./controllers/bookingController');
 /*
 200 ok and return data   get
 201 created     create
@@ -32,6 +32,12 @@ const cookieParser = require('cookie-parser');
 500 connection error
 
 */
+
+app.post(
+  '/checkout-webhook',
+  express.raw({ type: 'application/json' }),
+  bookingController.handleCheckout,
+);
 
 // Init View Engine in Express
 

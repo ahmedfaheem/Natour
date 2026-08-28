@@ -6,7 +6,7 @@ const Router = express.Router();
 
 Router.get(
   '/',
-  bookingController.createBookingCheckout,
+  // bookingController.createBookingCheckout,
   authController.isLoggedIn,
   viewController.getOverview,
 );
@@ -17,5 +17,10 @@ Router.get('/login', authController.isLoggedIn, viewController.getLoginForm);
 
 Router.get('/me', authController.protect, viewController.getAccount);
 
-Router.get('/my-tours', authController.protect, viewController.getMyTours);
+Router.get(
+  '/my-tours',
+  authController.protect,
+  viewController.showAlert,
+  viewController.getMyTours,
+);
 module.exports = Router;

@@ -7,7 +7,7 @@ head
   link(rel='shortcut icon' type='image/png' href='/img/favicon.png')
   block head
   title Natours | #{title}
-body
+body(data-alert=`${alert? alert: ''}`)
 
     
 include _header.pug

@@ -6,6 +6,7 @@ import { login, logout } from './login.js';
 import { updateData, updatePassword } from './updateSettings.js';
 import { displayMap } from './mapbox';
 import { BookNow } from './stripe';
+import { showAlert } from './alerts.js';
 const loginForm = document.querySelector('.login-form .form');
 const logOutBtn = document.querySelector('.nav__el--logout');
 const userDataForm = document.querySelector('.form-user-data');
@@ -67,4 +68,10 @@ if (BookBtn) {
     el.target.textContent = 'Processing..';
     await BookNow(tourId);
   });
+}
+
+const alert = document.querySelector('body').dataset.alert;
+
+if (alert) {
+  showAlert('success', alert, 20);
 }
